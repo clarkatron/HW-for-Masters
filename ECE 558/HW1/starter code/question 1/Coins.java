@@ -14,7 +14,12 @@ public class Coins
   public final double PENNY_VALUE = .01;
  
   // TODO: Define your instance variables here.  Make them private int
+  private int Quarter_count = 0;
+  private int Dime_count = 0;
+  private int Nickel_count = 0;
+  private int Penny_count = 0;
   
+
 
   /**
   * Constructor:<BR>
@@ -29,15 +34,21 @@ public class Coins
   */
   public Coins( int newQuarters, int newDimes, int newNickels, int newPennies )
   {
-    // TODO:  Complete the code.  Use the setters to set initial values
+    this.quarters = quarters;
+
+    this.dimes = dimes;
+
+    this.nickels = nickels;
+
+    this.pennies = pennies;
   }
 
   /** getQuarters method
   * @return the number of quarters
   */
-  public int getQuarters( )
+  public double getQuarters( )
   {
-    return quarters;
+    return quarters*QUARTER_VALUE;
   }
 
   /**
@@ -49,16 +60,15 @@ public class Coins
   */
   public Coins setQuarters( int quarters )
   {
-
-
+    this.quarters = quarters;
   }
 
   /** getDimes method
   * @return number of dimes
   */
-  public int getDimes( )
+  public double getDimes( )
   {
-    return dimes;
+    return dimes*DIME_VALUE;
   }
 
   /**
@@ -70,15 +80,15 @@ public class Coins
   */
   public Coins setDimes( int dimes )
   {
-    // TODO: Complete the code
+    this.dimes = dimes;
   }
 
   /** getNickels method
   * @return the number of nickels
   */
-  public int getNickels( )
+  public double getNickels( )
   {
-    return nickels;
+    return nickels*NICKEL_VALUE;
   }
 
   /**
@@ -90,15 +100,15 @@ public class Coins
   */
   public Coins setNickels( int nickels )
   {
-   // TODO: Complete the code
+   this.nickels = nickels;
   }
 
   /** getPennies method
   * @return the number of pennies
   */
-  public int getPennies( )
+  public double getPennies( )
   {
-    return pennies;
+    return pennies*PENNY_VALUE;
   }
 
   /**
@@ -110,7 +120,7 @@ public class Coins
   */
   public Coins setPennies( int pennies )
   {
-    // TODO: Complete the code
+    this.pennies = pennies;
   }
 
 /**
@@ -118,9 +128,9 @@ public class Coins
   */
   public String toString( )
   {
-    // TODO: Complete the code
+    return quarters + " quarters, " + dimes " dimes, " + nickels " nickels, and " + pennies " pennies.";
   }
-  }
+
 
   /**
   * equals method
@@ -129,20 +139,37 @@ public class Coins
   * @return a boolean, true if this object
   * has the same field values as the parameter c
   */
+  @Override
   public boolean equals( Object o )
   {
-	// TODO: Complete the code
-  }
+    if ( !(o instanceof Coins))
+      return false;
+    else {
+      Coins objCoin = (Coins) o;
 
+      if ((this.quarters == objCoin.quarters)
+              && (this.dimes == objCoin.dimes)
+              && (this.nickels == objCoin.nickels)
+              && (this.pennies == objCoin.pennies))
+        return true;
+      else
+        return false;
+    }
+  }
   /**
   * outputTotalAmount method
   * Outputs the total amount in $ notation
   */
   public void outputTotalAmount( )
   {
-    // TODO: Complete the code.  Make use of the java.text.DecimalFormat class library that was imported
-  }
+    float totalMoney = 0;
+    total += moneyFromPennies();
+    total += moneyFromNickels();
+    total += moneyFromDimes();
+    total += moneyFromQuarters();
 
+    return MONEY.format(total);
+  }
   /**
   * moneyFromQuarters method
   * Computes the dollar amount from quarters
@@ -152,12 +179,9 @@ public class Coins
   */
   public double moneyFromQuarters( )
   {
-
-    this.quarters = getQuarters();
-    double result = QUARTER_VALUE*this.quarters;
+    double result = QUARTER_VALUE * this.quarters;
     return result;
   }
-
   /**
   * moneyFromDimes method
   * Computes the dollar amount from dimes
@@ -165,9 +189,9 @@ public class Coins
   */
   public double moneyFromDimes( )
   {
-    // TODO: Complete the code
+    double result = DIME_VALUE * this.dimes;
+    return result;
   }
-
   /**
   * moneyFromNickels method
   * Computes the dollar amount from nickels
@@ -175,9 +199,9 @@ public class Coins
   */
   public double moneyFromNickels( )
   {
-    // TODO: Complete the code
+    double result = NICKEL_VALUE * this.nickels;
+    return result;
   }
-
   /**
   * moneyFromPennies method
   * Computes the dollar amount from pennies
@@ -185,6 +209,32 @@ public class Coins
   */
   public double moneyFromPennies( )
   {
-    // TODO: Complete the code
+    double result = PENNY_VALUE * this.pennies;
+    return result;
+  }
+}
+
+public class testCoins {
+  public static void main(String[] args) {
+    Coins coins = new Coins(2, 3, 8, 7);
+
+    System.out.println(coins.toString());
+
+    System.out.print("Total: ");
+    System.out.println(coins.outputTotalAmount());
+
+    System.out.println("Quarters: " + coins.getQuarters());
+
+    System.out.println("Dimes: " + coins.getDimes());
+
+    System.out.println("Nickels: " + coins.getNickels());
+
+    System.out.println("Pennies: " + coins.getPennies());
+    }
+  }
+
+
+
+
   }
 }

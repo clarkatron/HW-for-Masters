@@ -38,4 +38,30 @@ for (int j = 0; j < a[1].length; j++) {
 	}
 }
 
+/*4: Write a method that takes an integer input from the user, then prompts for additional
+integers and keeps track of the sum of all of the integers. When the user enters a negative 
+number the program should print out the sum of all of the integers. Do not include the negative
+number in the sum. */
 
+import java.util.*;
+import java.io.*;
+
+public static void main( String [] args)
+{
+	Scanner scan = new Scanner(System.in);
+    int result = 0;
+	
+    System.out.println("Enter an integer to add to the total: ");
+	int temp = scan.nextInt();
+    
+	while (temp >= 0) 
+	{
+		if (temp >= 0) 
+		{
+			result += temp;
+		}
+		System.out.println("Enter an integer to add to the total: ");
+		temp = scan.nextInt();
+	}
+	System.out.println("Total is: " + result);
+}

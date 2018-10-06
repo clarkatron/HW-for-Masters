@@ -22,6 +22,10 @@ public class fruitFood extends Food
 		super(foodDescription, calorieCount);
 	}
 	
+	public String getSeason() {return this.season};
+	
+	public fruitFood setSeason(String season) {this.season = season;}
+	
 	@Override
 	public double servingCalories(int numServing)
 	{
@@ -44,6 +48,10 @@ public class liquidFood extends Food
 		this.viscosity = viscosity;
 		super(foodDescription, calorieCount);
 	}
+	
+	public double getViscosity () {return this.viscosity;}
+	
+	public liquidFood setViscosity (double viscosity) {this.viscosity = viscosity;}
 	
 	@Override
 	public double servingCalories(int numServing)

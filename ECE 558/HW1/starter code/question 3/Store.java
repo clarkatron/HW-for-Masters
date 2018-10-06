@@ -63,3 +63,41 @@ public class Store
     }
   }
 }
+
+//Music Store being represented here:
+public class musicStore extends Store
+{
+  int numTitles;
+  String storeAddress;
+
+  //Constructor
+  public musicStore (int numTitles, String storeAddress, String newStore)
+  {
+    super(newStore);
+    this.numTitles = numTitles;
+    this.storeAddress = storeAddress;
+  }
+
+  //toString method that we will override for our own purposes.
+  public String toString ()
+  {
+    return "Name of Store " + newStore +" with " + numTitles + " titles at " + storeAddress ".";
+  }
+
+  //equals method
+  public boolean equals ( Object o )
+  {
+    if (!(o instanceof musicStore))
+      return false;
+    else
+    {
+      musicStore objMusic = (musicStore) o;
+
+      if ((this.numTitles == objMusic.numTitles)
+              && (this.storeAddress == objMusic.storeAddress))
+        return true;
+      else
+        return false;
+    }
+  }
+}

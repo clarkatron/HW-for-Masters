@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
                     input2 = Float.parseFloat(editText2.getText().toString());
                     sum = input1 + input2;
                     result.setText(Double.toString(sum));
+                    editText.requestFocus();
                 }
             }
         });
@@ -71,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
                     input2 = Float.parseFloat(editText2.getText().toString());
                     sum = input1 - input2;
                     result.setText(Double.toString(sum));
+                    editText.requestFocus();
                 }
             }
         });
@@ -92,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
                     input2 = Float.parseFloat(editText2.getText().toString());
                     sum = input1 * input2;
                     result.setText(Double.toString(sum));
+                    editText.requestFocus();
                 }
             }
         });
@@ -120,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
                     else {
                         sum = input1 / input2;
                         result.setText(Double.toString(sum));
+                        editText.requestFocus();
                     }
                 }
             }
@@ -151,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
                     else {
                         sum = Math.sqrt(input1);
                         result.setText(Double.toString(sum));
+                        editText.requestFocus();
                     }
                 }
             }
@@ -175,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
                     //input2 = Float.parseFloat(editText2.getText().toString());
                     sum = input1/100;
                     result.setText(Double.toString(sum));
+                    editText.requestFocus();
                 }
             }
         });

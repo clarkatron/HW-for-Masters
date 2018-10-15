@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">calculat_clark</string>
+    <string name="solve">Solve</string>
+    <string name="percent">Percent</string>
+    <string name="square_root">Square Root</string>
+    <string name="divide">Divide</string>
+    <string name="multiply">Multiply</string>
+    <string name="subtract">Subtract</string>
+    <string name="addition">Addition</string>
+    <string name="input1">Input1</string>
+    <string name="input2">Input2</string>
+</resources>

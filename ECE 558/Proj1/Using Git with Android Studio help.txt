@@ -1,0 +1,61 @@
+We will be using the Git integration within Android Studio for the programming projects in this course. However, doing so for Project #1 will
+be optional, but strongly encouraged.  With the switch from Java to Android and the potential learning curve for Android Studio
+if you did not use IntelliJ for your Homework #1 Java programming, I felt it better the limit the amount of new stuff you had to learn to
+get this first project done.
+
+Rather than push off this learning for Project #2 where the programming challenge is greater, I'd like you to experiment (e.g. use successfully)
+with the version control functionality built into Android Studio.  It is nicely implemented and integrated into the IntelliJ environment and 
+there are clear advantages to doing your Android code development under a source versioning control system such as Git.  
+Why Git?  Git has become one of the most popular version control systems on the planet and it is free for student use.  In fact, students are able
+to easily procure a Developer's license which  allows the creating of an unlimited number of private repositories (you should always keep your school
+project for me in a private repository).  
+
+Installing and configuring Git and GitHub:
+------------------------------------------
+1.  Check if Git is installed on your PC
+  - git --version
+
+2. Install Git if necessary
+  - https://git-scm.com/downloads
+
+3. Configure Git
+  - git config --global user.name “your name”
+  -  git config --global user.email “your email address”
+  - gig config --list
+
+4. Create a GitHub account if necessary
+  - https://github.com/
+
+5. Get a student developer pack (unlimited free repositories,developer tools, and swag)
+  - https://education.github.com/pack
+  
+  
+Learning Git and GitHub:
+------------------------
+We will not be teaching either Git or GitHub during the course.  You are expected to learn to use these tools on their own.  Fortunately, there are many excellent tutorials and videos that will simplify this task.  Here are links to two video tutorials that I found to be helpful.
+
+Edureka (1hr, 45 min): https://www.youtube.com/watch?v=xuB1Id2Wxak
+
+TraversyMedia (32 min): https://www.youtube.com/watch?v=SWYqp7iY_Tc&t=96s
+
+
+Android Studio/Git Integration
+------------------------------
+We will not be specifically teaching you how to use the Git integration within Android Studio.  It is fairly straightforward (if you have a good grasp of Git and GitHub).
+Here are a couple of links that I found to be helpful:
+
+Brief Git w/ Android tutorial link:
+https://javapapers.com/android/android-studio-git-tutorial/
+
+More complete tutorial on Git integration within Android Studio
+https://code.tutsplus.com/tutorials/working-with-git-in-android-studio--cms-30514
+
+
+Pretty good tutorial videos:
+
+https://www.youtube.com/watch?v=3p_fgJEbsp8
+
+https://www.youtube.com/watch?v=_d4fFFAJKVA
+
+
+

@@ -1,3 +1,16 @@
 <resources>
+<<<<<<< HEAD
     <string name="app_name">Calculator</string>
+=======
+    <string name="app_name">calculat_clark</string>
+    <string name="solve">Solve</string>
+    <string name="percent">Percent</string>
+    <string name="square_root">Square Root</string>
+    <string name="divide">Divide</string>
+    <string name="multiply">Multiply</string>
+    <string name="subtract">Subtract</string>
+    <string name="addition">Addition</string>
+    <string name="input1">Input1</string>
+    <string name="input2">Input2</string>
+>>>>>>> ac09c5b33ac6b9e07b5392aafea1bc313a862ac2
 </resources>

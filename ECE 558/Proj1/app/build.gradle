@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 android {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.example.lid_psu.calculator"
@@ -17,6 +18,8 @@ android {
             storePassword 'CygnusX1#$'
         }
     }
+=======
+>>>>>>> parent of ac09c5b... proj1 is done
 =======
 >>>>>>> parent of ac09c5b... proj1 is done
     compileSdkVersion 28
@@ -35,6 +38,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         }
     }
 }
@@ -44,6 +48,8 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:27.1.1'
 =======
             signingConfig signingConfigs.config
+=======
+>>>>>>> parent of ac09c5b... proj1 is done
 =======
 >>>>>>> parent of ac09c5b... proj1 is done
         }

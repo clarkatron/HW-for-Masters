@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<<<<<<< HEAD
     package="com.example.lid_psu.calculator">
+=======
+    package="com.example.clark.calculat_clark">
+>>>>>>> ac09c5b33ac6b9e07b5392aafea1bc313a862ac2
 
     <application
         android:allowBackup="true"
@@ -9,7 +13,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+<<<<<<< HEAD
         <activity android:name=".Calc_home">
+=======
+        <activity android:name=".MainActivity">
+>>>>>>> ac09c5b33ac6b9e07b5392aafea1bc313a862ac2
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

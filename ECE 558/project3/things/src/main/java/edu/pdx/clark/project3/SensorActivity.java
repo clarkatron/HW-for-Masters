@@ -67,13 +67,12 @@ public class SensorActivity extends Activity {
         if (((List) deviceList).isEmpty()) {
             Log.i(TAG, "no i2c busses available");
         }
-        else { deviceName = deviceList[0]; }
+        else { deviceName = deviceList.get(0); }
 
-
-        getDataInit();
+        getDataInit(deviceName);
     }
 
-    public void getDataInit() {
+    public void getDataInit(I2cDevice deviceName) {
 
 
 

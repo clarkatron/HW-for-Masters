@@ -3,8 +3,10 @@ package edu.pdx.clark.project3;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.lang.Object;
+import java.util.List;
 
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.PeripheralManager;
@@ -44,8 +46,10 @@ import com.google.firebase.database.ValueEventListener;
 public class SensorActivity extends Activity {
 
     private DatabaseReference databaseRef;
+    private String deviceName;
+    private static final String TAG = "SensorActivity";
 
-    private int
+    private int pwm_green, pwm_red, pwm_blue;
 
     private static final String GPIO_LED_PWM = "BCM4";
     private Gpio ledPWM;
@@ -58,10 +62,20 @@ public class SensorActivity extends Activity {
         FirebaseApp.initializeApp(this);
         databaseRef = FirebaseDatabase.getInstance().getReference();
 
+        PeripheralManager manager = PeripheralManager.getInstance();
+        List<String> deviceList = manager.getI2cBusList();
+        if (((List) deviceList).isEmpty()) {
+            Log.i(TAG, "no i2c busses available");
+        }
+        else { deviceName = deviceList[0]; }
+
+
         getDataInit();
     }
 
     public void getDataInit() {
+
+
 
     }
 }

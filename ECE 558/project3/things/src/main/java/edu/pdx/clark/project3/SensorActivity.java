@@ -73,18 +73,22 @@ public class SensorActivity extends Activity {
         databaseRef = FirebaseDatabase.getInstance().getReference();
 
         manager = PeripheralManager.getInstance();
-        
+
         try {
             I2cDevice picdevice = manager.openI2cDevice("PicChip", i2c_address);
             ledPWM = manager.openGpio(GPIO_LED_PWM);
             ledPWM.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
+            if (picdevice == null) {
+                ledPWM.setValue(true);
+            }
         } catch (IOException ex) {
             {
                 Log.i(TAG, "i2c won't open");
             }
             //Send device name to the data initialization function
-            getDataInit(deviceName);
+
         }
+        getDataInit(deviceName);
     }
 
     /**
@@ -113,12 +117,8 @@ public class SensorActivity extends Activity {
      */
     public void writeI2c (int reg_address, int data) {
         try {
+            
 
-            ledPWM = manager.openGpio(GPIO_LED_PWM);
-
-            if (ledPWM == null) {
-                ledPWM.setValue(true);
-            }
         } catch (IOException e) {
             Log.i(TAG, "i2c not working");
         }
@@ -127,11 +127,7 @@ public class SensorActivity extends Activity {
     public void readI2c (int reg_address, int data) {
         try {
 
-            ledPWM = manager.openGpio(GPIO_LED_PWM);
 
-            if (ledPWM == null) {
-                ledPWM.setValue(true);
-            }
         } catch (IOException e) {
             Log.i(TAG, "i2c not working");
         }

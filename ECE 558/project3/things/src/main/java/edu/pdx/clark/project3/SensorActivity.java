@@ -51,6 +51,7 @@ public class SensorActivity extends Activity {
     public String deviceName;
     private static final String TAG = "SensorActivity";
     private PeripheralManager manager;
+    private I2cDevice picdevice;
 
     private int i2c_address = 0x08;
     private int pwm_green, pwm_red, pwm_blue;
@@ -75,7 +76,7 @@ public class SensorActivity extends Activity {
         manager = PeripheralManager.getInstance();
 
         try {
-            I2cDevice picdevice = manager.openI2cDevice("PicChip", i2c_address);
+            picdevice = manager.openI2cDevice("PicChip", i2c_address);
             ledPWM = manager.openGpio(GPIO_LED_PWM);
             ledPWM.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
             if (picdevice == null) {
@@ -89,6 +90,20 @@ public class SensorActivity extends Activity {
 
         }
         getDataInit(deviceName);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (picdevice != null) {
+            try {
+                picdevice.close();
+                picdevice = null;
+            } catch (IOException e) {
+                Log.i(TAG, "Unable to close I2C device", e);
+            }
+        }
     }
 
     /**
@@ -115,22 +130,12 @@ public class SensorActivity extends Activity {
     /**
      * This next function will write or read to the i2c line to access data registers.
      */
-    public void writeI2c (int reg_address, int data) {
-        try {
-            
-
-        } catch (IOException e) {
-            Log.i(TAG, "i2c not working");
-        }
+    public void writeI2c (int reg_address, byte data) throws IOException {
+        picdevice.writeRegByte(reg_address, data);
     }
 
-    public void readI2c (int reg_address, int data) {
-        try {
-
-
-        } catch (IOException e) {
-            Log.i(TAG, "i2c not working");
-        }
+    public void readI2c (int reg_address) throws IOException {
+        picdevice.readRegByte(reg_address);
     }
 }
 

@@ -23,6 +23,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.group.cb.api.API;
+import com.group.cb.api.APIListener;
 
 
 /**
@@ -72,7 +73,6 @@ public class SensorActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensor);
 
-        api = new API(this);
         FirebaseApp.initializeApp(this);
         databaseRef = FirebaseDatabase.getInstance().getReference();
 
@@ -91,6 +91,17 @@ public class SensorActivity extends Activity {
         getDataInit();
 
         api = new API(this);
+        api.addAPIListener(API.DAC1OUT, new APIListener() {
+            @Override
+            public void callback(double value) {
+                Log.d(TAG, "DAC1OUT: " + value);
+            }
+
+            @Override
+            public void callback(String value) {
+
+            }
+        });
     }
 
     @Override

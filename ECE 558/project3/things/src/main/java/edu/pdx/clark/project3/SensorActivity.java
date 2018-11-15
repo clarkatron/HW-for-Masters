@@ -12,7 +12,7 @@ import java.io.IOException;
 
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.PeripheralManager;
-import com.google.android.things.pio.PeripheralManagerService;
+//import com.google.android.things.pio.PeripheralManagerService;
 import com.google.android.things.pio.I2cDevice;
 
 import com.google.firebase.FirebaseApp;
@@ -48,7 +48,7 @@ import com.google.firebase.database.ValueEventListener;
 public class SensorActivity extends Activity {
 
     private DatabaseReference databaseRef;
-    private String deviceName;
+    public String deviceName;
     private static final String TAG = "SensorActivity";
 
     private int pwm_green, pwm_red, pwm_blue;
@@ -77,7 +77,7 @@ public class SensorActivity extends Activity {
         else { deviceName = deviceList.get(0); }
 
         //Send device name to the data initialization function
-        //getDataInit(deviceName);
+        getDataInit(deviceName);
     }
 
     /**
@@ -85,7 +85,7 @@ public class SensorActivity extends Activity {
      * in the DAC field of the PIC controller.
      * @param deviceName
      */
-    public void getDataInit(final I2cDevice deviceName) {
+    public void getDataInit(I2cDevice deviceName) {
 
         ValueEventListener dataListener = new ValueEventListener() {
             @Override
@@ -99,7 +99,12 @@ public class SensorActivity extends Activity {
             }
         };
 
+    }
 
+    /**
+     * This next function will write or read to the i2c line to access data registers.
+     */
+    public void writeI2c () {
 
     }
 }

@@ -97,9 +97,7 @@ public class SensorActivity extends Activity {
             try {
                 picdevice.close();
                 picdevice = null;
-            } catch (IOException e) {
-                Log.i(TAG, "Unable to close I2C device", e);
-            }
+            } catch (IOException e) { Log.i(TAG, "Unable to close I2C device", e); }
         }
     }
 

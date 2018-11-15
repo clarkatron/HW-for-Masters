@@ -86,7 +86,7 @@ public class SensorActivity extends Activity {
             //Send device name to the data initialization function
 
 
-        getDataInit(deviceName);
+        getDataInit();
     }
 
     @Override
@@ -108,7 +108,7 @@ public class SensorActivity extends Activity {
      * in the DAC field of the PIC controller.
      * @param deviceName
      */
-    public void getDataInit (I2cDevice deviceName){
+    public void getDataInit (){
 
         ValueEventListener dataListener = new ValueEventListener() {
             @Override
@@ -131,8 +131,9 @@ public class SensorActivity extends Activity {
         picdevice.writeRegByte(reg_address, data);
     }
 
-    public void readI2c (int reg_address) throws IOException {
-        picdevice.readRegByte(reg_address);
+    public byte readI2c (int reg_address) throws IOException {
+        byte data = picdevice.readRegByte(reg_address);
+        return data;
     }
 }
 

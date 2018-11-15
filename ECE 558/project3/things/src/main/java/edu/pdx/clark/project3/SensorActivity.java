@@ -54,6 +54,11 @@ public class SensorActivity extends Activity {
     private static final String GPIO_LED_PWM = "BCM4";
     private Gpio ledPWM;
 
+    /**
+     * Create the app, setup the i2c device list and set the name of the device.
+     * Then we will go into the data acquasition loop.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,10 +74,17 @@ public class SensorActivity extends Activity {
         }
         else { deviceName = deviceList.get(0); }
 
-        getDataInit(deviceName);
+        //Send device name to the data initialization function
+        //getDataInit(deviceName);
     }
 
+    /**
+     * This will loop and give us data when data changes in the PWM[3-6] fields of the database and
+     * in the DAC field of the PIC controller.
+     * @param deviceName
+     */
     public void getDataInit(I2cDevice deviceName) {
+
 
 
 

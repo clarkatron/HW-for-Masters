@@ -49,9 +49,10 @@ public class SensorActivity extends Activity {
 
     private DatabaseReference databaseRef;
     public String deviceName;
-    private static final String TAG = "SensorActivity";
+    private static final String TAG = SensorActivity.class.getSimpleName();
     private PeripheralManager manager;
     private I2cDevice picdevice;
+    private API api;
 
     private int i2c_address = 0x08;
     private int pwm_green, pwm_red, pwm_blue;
@@ -71,9 +72,6 @@ public class SensorActivity extends Activity {
         setContentView(R.layout.activity_sensor);
 
         api = new API(this);
-        FirebaseApp.initializeApp(this);
-        databaseRef = FirebaseDatabase.getInstance().getReference();
-
         manager = PeripheralManager.getInstance();
 
         try {
@@ -108,17 +106,7 @@ public class SensorActivity extends Activity {
      */
     public void getDataInit (){
 
-        ValueEventListener dataListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
+        
     }
 
     /**

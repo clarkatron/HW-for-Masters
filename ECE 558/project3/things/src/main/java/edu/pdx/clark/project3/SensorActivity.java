@@ -76,7 +76,7 @@ public class SensorActivity extends Activity {
         manager = PeripheralManager.getInstance();
 
         try {
-            picdevice = manager.openI2cDevice("PicChip", i2c_address);
+            //picdevice = manager.openI2cDevice("I2C1", i2c_address);
             ledPWM = manager.openGpio(GPIO_LED_PWM);
             ledPWM.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
             if (picdevice == null) {
@@ -92,6 +92,24 @@ public class SensorActivity extends Activity {
             @Override
             public void callback(double value) {
                 Log.d(TAG, "DAC1OUT: " + value);
+            }
+
+            @Override
+            public void callback(String value) {
+
+            }
+        });
+
+        api.addAPIListener(API.PWM4, new APIListener() {
+            @Override
+            public void callback(double value) {
+                byte message = (byte) ((int)value);
+                Log.d(TAG, "PWM4: " + message);
+                try {
+                    writeI2c(0x01, message);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -127,11 +145,21 @@ public class SensorActivity extends Activity {
      * This next function will write or read to the i2c line to access data registers.
      */
     public void writeI2c (int reg_address, byte data) throws IOException {
-        picdevice.writeRegByte(reg_address, data);
+        try {
+            if (picdevice != null) {
+                picdevice.writeRegByte(reg_address, data);
+            }
+        } catch (java.io.IOException e) {
+            Log.d(TAG, "writeI2c failed" + e);
+        }
     }
 
     public byte readI2c (int reg_address) throws IOException {
-        byte data = picdevice.readRegByte(reg_address);
+        byte data = 0;
+        if (picdevice != null) {
+            data = picdevice.readRegByte(reg_address);
+
+        }
         return data;
     }
 }

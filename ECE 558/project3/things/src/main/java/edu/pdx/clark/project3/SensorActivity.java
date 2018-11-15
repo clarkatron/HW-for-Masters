@@ -88,55 +88,56 @@ public class SensorActivity extends Activity {
             //Send device name to the data initialization function
             getDataInit(deviceName);
         }
+    }
 
-        /**
-         * This will loop and give us data when data changes in the PWM[3-6] fields of the database and
-         * in the DAC field of the PIC controller.
-         * @param deviceName
-         */
-        public void getDataInit (I2cDevice deviceName){
+    /**
+     * This will loop and give us data when data changes in the PWM[3-6] fields of the database and
+     * in the DAC field of the PIC controller.
+     * @param deviceName
+     */
+    public void getDataInit (I2cDevice deviceName){
 
-            ValueEventListener dataListener = new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        ValueEventListener dataListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            };
-
-        }
-
-        /**
-         * This next function will write or read to the i2c line to access data registers.
-         */
-        public void writeI2c () {
-            try {
-
-                ledPWM = manager.openGpio(GPIO_LED_PWM);
-                ledPWM.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
-                if (ledPWM == null) {
-                    ledPWM.setValue(true);
-                }
-            } catch (IOException e) {
-                Log.i(TAG, "i2c not working");
             }
-        }
 
-        public void readI2c () {
-            try {
-                
-                ledPWM = manager.openGpio(GPIO_LED_PWM);
-                ledPWM.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
-                if (ledPWM == null) {
-                    ledPWM.setValue(true);
-                }
-            } catch (IOException e) {
-                Log.i(TAG, "i2c not working");
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
+        };
+
+    }
+
+    /**
+     * This next function will write or read to the i2c line to access data registers.
+     */
+    public void writeI2c () {
+        try {
+
+            ledPWM = manager.openGpio(GPIO_LED_PWM);
+            ledPWM.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
+            if (ledPWM == null) {
+                ledPWM.setValue(true);
+            }
+        } catch (IOException e) {
+            Log.i(TAG, "i2c not working");
+        }
+    }
+
+    public void readI2c () {
+        try {
+
+            ledPWM = manager.openGpio(GPIO_LED_PWM);
+            ledPWM.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
+            if (ledPWM == null) {
+                ledPWM.setValue(true);
+            }
+        } catch (IOException e) {
+            Log.i(TAG, "i2c not working");
         }
     }
 }
+

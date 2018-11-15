@@ -70,6 +70,7 @@ public class SensorActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensor);
 
+        api = new API(this);
         FirebaseApp.initializeApp(this);
         databaseRef = FirebaseDatabase.getInstance().getReference();
 

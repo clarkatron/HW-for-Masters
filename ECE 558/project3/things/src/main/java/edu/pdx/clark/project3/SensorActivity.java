@@ -19,12 +19,8 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.group.cb.api.API;
 import com.group.cb.api.APIListener;
-
 
 /**
  * Skeleton of an Android Things activity.
@@ -85,13 +81,47 @@ public class SensorActivity extends Activity {
         } catch (IOException ex) { Log.i(TAG, "i2c won't open"); }
             //Send device name to the data initialization function
 
-        getDataInit();
 
         api = new API(this);
         api.addAPIListener(API.DAC1OUT, new APIListener() {
             @Override
             public void callback(double value) {
                 Log.d(TAG, "DAC1OUT: " + value);
+            }
+
+            @Override
+            public void callback(String value) {
+
+            }
+        });
+        api.addAPIListener(API.PWM4, new APIListener() {
+            @Override
+            public void callback(double value) {
+                int message = (int) value;
+                Log.d(TAG, "PWM4: " + value);
+                writeI2c(0x01, message);
+            }
+
+            @Override
+            public void callback(String value) {
+
+            }
+        });
+        api.addAPIListener(API.PWM5, new APIListener() {
+            @Override
+            public void callback(double value) {
+                Log.d(TAG, "PWM5: " + value);
+            }
+
+            @Override
+            public void callback(String value) {
+
+            }
+        });
+        api.addAPIListener(API.PWM6, new APIListener() {
+            @Override
+            public void callback(double value) {
+                Log.d(TAG, "PWM6: " + value);
             }
 
             @Override
@@ -126,8 +156,14 @@ public class SensorActivity extends Activity {
     /**
      * This next function will write or read to the i2c line to access data registers.
      */
-    public void writeI2c (int reg_address, byte data) throws IOException {
-        picdevice.writeRegByte(reg_address, data);
+    public void writeI2c (int reg_address, int data) {
+        try {
+            picdevice.writeRegByte(reg_address, (byte) data);
+        } catch (IOException e) {
+            Log.i(TAG, "Unable to close I2C device", e);
+
+        }
+
     }
 
     public byte readI2c (int reg_address) throws IOException {

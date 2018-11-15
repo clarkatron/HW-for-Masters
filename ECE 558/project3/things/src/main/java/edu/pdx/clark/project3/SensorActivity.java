@@ -103,7 +103,7 @@ public class SensorActivity extends Activity {
     /**
      * This will loop and give us data when data changes in the PWM[3-6] fields of the database and
      * in the DAC field of the PIC controller.
-     * @param deviceName
+     * @param
      */
     public void getDataInit (){
 

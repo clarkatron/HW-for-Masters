@@ -61,6 +61,7 @@ public class SensorActivity extends Activity {
     /**
      * Create the app, setup the i2c device list and set the name of the device.
      * Then we will go into the data acquasition loop.
+     *
      * @param savedInstanceState
      */
     @Override
@@ -75,48 +76,67 @@ public class SensorActivity extends Activity {
         List<String> deviceList = manager.getI2cBusList();
         if (((List) deviceList).isEmpty()) {
             Log.i(TAG, "no i2c busses available");
+        } else {
+            deviceName = deviceList.get(0);
         }
-        else { deviceName = deviceList.get(0); }
-
-        //Send device name to the data initialization function
-        getDataInit(deviceName);
-    }
-
-    /**
-     * This will loop and give us data when data changes in the PWM[3-6] fields of the database and
-     * in the DAC field of the PIC controller.
-     * @param deviceName
-     */
-    public void getDataInit(I2cDevice deviceName) {
-
-        ValueEventListener dataListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
-
-    }
-
-    /**
-     * This next function will write or read to the i2c line to access data registers.
-     */
-    public void writeI2c () {
         try {
             I2cDevice picdevice = manager.openI2cDevice("PicChip", i2c_address);
-            ledPWM = manager.openGpio(GPIO_LED_PWM);
-            ledPWM.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
+        } catch (IOException ex) {
+            {
+                Log.i(TAG, "i2c won't open");
+            }
+            //Send device name to the data initialization function
+            getDataInit(deviceName);
+        }
 
-        } catch (IOException e) {
+        /**
+         * This will loop and give us data when data changes in the PWM[3-6] fields of the database and
+         * in the DAC field of the PIC controller.
+         * @param deviceName
+         */
+        public void getDataInit (I2cDevice deviceName){
+
+            ValueEventListener dataListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            };
 
         }
 
+        /**
+         * This next function will write or read to the i2c line to access data registers.
+         */
+        public void writeI2c () {
+            try {
 
+                ledPWM = manager.openGpio(GPIO_LED_PWM);
+                ledPWM.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
+                if (ledPWM == null) {
+                    ledPWM.setValue(true);
+                }
+            } catch (IOException e) {
+                Log.i(TAG, "i2c not working");
+            }
+        }
 
+        public void readI2c () {
+            try {
+                
+                ledPWM = manager.openGpio(GPIO_LED_PWM);
+                ledPWM.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
+                if (ledPWM == null) {
+                    ledPWM.setValue(true);
+                }
+            } catch (IOException e) {
+                Log.i(TAG, "i2c not working");
+            }
+        }
     }
 }

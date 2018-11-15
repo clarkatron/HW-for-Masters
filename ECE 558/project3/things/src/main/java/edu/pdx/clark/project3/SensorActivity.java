@@ -50,7 +50,9 @@ public class SensorActivity extends Activity {
     private DatabaseReference databaseRef;
     public String deviceName;
     private static final String TAG = "SensorActivity";
+    private PeripheralManager manager;
 
+    private int i2c_address = 0x08;
     private int pwm_green, pwm_red, pwm_blue;
 
     private static final String GPIO_LED_PWM = "BCM4";
@@ -69,7 +71,7 @@ public class SensorActivity extends Activity {
         FirebaseApp.initializeApp(this);
         databaseRef = FirebaseDatabase.getInstance().getReference();
 
-        PeripheralManager manager = new PeripheralManager();
+        manager = PeripheralManager.getInstance();
         List<String> deviceList = manager.getI2cBusList();
         if (((List) deviceList).isEmpty()) {
             Log.i(TAG, "no i2c busses available");
@@ -105,6 +107,16 @@ public class SensorActivity extends Activity {
      * This next function will write or read to the i2c line to access data registers.
      */
     public void writeI2c () {
+        try {
+            I2cDevice picdevice = manager.openI2cDevice("PicChip", i2c_address);
+            ledPWM = manager.openGpio(GPIO_LED_PWM);
+            ledPWM.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
+
+        } catch (IOException e) {
+
+        }
+
+
 
     }
 }

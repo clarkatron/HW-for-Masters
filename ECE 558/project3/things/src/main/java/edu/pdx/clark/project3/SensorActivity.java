@@ -82,13 +82,10 @@ public class SensorActivity extends Activity {
             if (picdevice == null) {
                 ledPWM.setValue(true);
             }
-        } catch (IOException ex) {
-            {
-                Log.i(TAG, "i2c won't open");
-            }
+        } catch (IOException ex) { Log.i(TAG, "i2c won't open"); }
             //Send device name to the data initialization function
 
-        }
+
         getDataInit(deviceName);
     }
 

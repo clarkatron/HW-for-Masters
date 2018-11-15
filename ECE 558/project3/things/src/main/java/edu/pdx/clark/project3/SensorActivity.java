@@ -85,7 +85,6 @@ public class SensorActivity extends Activity {
         } catch (IOException ex) { Log.i(TAG, "i2c won't open"); }
             //Send device name to the data initialization function
 
-
         getDataInit();
     }
 
@@ -119,7 +118,6 @@ public class SensorActivity extends Activity {
 
             }
         };
-
     }
 
     /**

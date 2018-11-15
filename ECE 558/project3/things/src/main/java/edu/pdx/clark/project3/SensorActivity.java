@@ -23,7 +23,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.group.cb.api.API;
-import com.group.cb.api.APIListener;
 
 
 /**
@@ -51,9 +50,10 @@ public class SensorActivity extends Activity {
 
     private DatabaseReference databaseRef;
     public String deviceName;
-    private static final String TAG = "SensorActivity";
+    private static final String TAG = SensorActivity.class.getSimpleName();
     private PeripheralManager manager;
     private I2cDevice picdevice;
+    private API api;
 
     private int i2c_address = 0x08;
     private int pwm_green, pwm_red, pwm_blue;
@@ -73,6 +73,7 @@ public class SensorActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensor);
 
+        api = new API(this);
         FirebaseApp.initializeApp(this);
         databaseRef = FirebaseDatabase.getInstance().getReference();
 
@@ -116,24 +117,14 @@ public class SensorActivity extends Activity {
         }
     }
 
-    /**
+   /**
      * This will loop and give us data when data changes in the PWM[3-6] fields of the database and
      * in the DAC field of the PIC controller.
      * @param
      */
     public void getDataInit (){
 
-        ValueEventListener dataListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        };
     }
 
     /**

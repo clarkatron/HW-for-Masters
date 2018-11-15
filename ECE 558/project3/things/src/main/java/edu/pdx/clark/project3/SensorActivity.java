@@ -106,7 +106,7 @@ public class SensorActivity extends Activity {
      */
     public void getDataInit (){
 
-        
+
     }
 
     /**

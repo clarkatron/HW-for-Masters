@@ -22,6 +22,7 @@ import com.google.firebase.database.DatabaseReference;
 
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.group.cb.api.API;
 
 
 /**
@@ -58,6 +59,7 @@ public class SensorActivity extends Activity {
 
     private static final String GPIO_LED_PWM = "BCM4";
     private Gpio ledPWM;
+    private API api;
 
     /**
      * Create the app, setup the i2c device list and set the name of the device.
@@ -87,6 +89,8 @@ public class SensorActivity extends Activity {
             //Send device name to the data initialization function
 
         getDataInit();
+
+        api = new API(this);
     }
 
     @Override

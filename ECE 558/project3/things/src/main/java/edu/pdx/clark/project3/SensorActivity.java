@@ -2,14 +2,17 @@ package edu.pdx.clark.project3;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.lang.Object;
 import java.util.List;
+import java.io.IOException;
 
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.PeripheralManager;
+import com.google.android.things.pio.PeripheralManagerService;
 import com.google.android.things.pio.I2cDevice;
 
 import com.google.firebase.FirebaseApp;
@@ -42,7 +45,6 @@ import com.google.firebase.database.ValueEventListener;
  */
 
 
-
 public class SensorActivity extends Activity {
 
     private DatabaseReference databaseRef;
@@ -67,7 +69,7 @@ public class SensorActivity extends Activity {
         FirebaseApp.initializeApp(this);
         databaseRef = FirebaseDatabase.getInstance().getReference();
 
-        PeripheralManager manager = PeripheralManager.getInstance();
+        PeripheralManager manager = new PeripheralManager();
         List<String> deviceList = manager.getI2cBusList();
         if (((List) deviceList).isEmpty()) {
             Log.i(TAG, "no i2c busses available");
@@ -83,8 +85,19 @@ public class SensorActivity extends Activity {
      * in the DAC field of the PIC controller.
      * @param deviceName
      */
-    public void getDataInit(I2cDevice deviceName) {
+    public void getDataInit(final I2cDevice deviceName) {
 
+        ValueEventListener dataListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
 
 
 

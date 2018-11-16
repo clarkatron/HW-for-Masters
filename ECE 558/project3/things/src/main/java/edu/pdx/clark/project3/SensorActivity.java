@@ -94,48 +94,17 @@ public class SensorActivity extends Activity {
 
             }
         });
-<<<<<<< HEAD
 
         api.addAPIListener(API.PWM4, new APIListener() {
             @Override
             public void callback(double value) {
-                byte message = (byte) ((int)value);
+                byte message = (byte) ((int) value);
                 Log.d(TAG, "PWM4: " + message);
                 try {
                     writeI2c(0x01, message);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-=======
-        api.addAPIListener(API.PWM4, new APIListener() {
-            @Override
-            public void callback(double value) {
-                int message = (int) value;
-                Log.d(TAG, "PWM4: " + value);
-                writeI2c(0x01, message);
-            }
-
-            @Override
-            public void callback(String value) {
-
-            }
-        });
-        api.addAPIListener(API.PWM5, new APIListener() {
-            @Override
-            public void callback(double value) {
-                Log.d(TAG, "PWM5: " + value);
-            }
-
-            @Override
-            public void callback(String value) {
-
-            }
-        });
-        api.addAPIListener(API.PWM6, new APIListener() {
-            @Override
-            public void callback(double value) {
-                Log.d(TAG, "PWM6: " + value);
->>>>>>> b641389753039865351f59cb065c38a694e7d67f
             }
 
             @Override
@@ -170,7 +139,6 @@ public class SensorActivity extends Activity {
     /**
      * This next function will write or read to the i2c line to access data registers.
      */
-<<<<<<< HEAD
     public void writeI2c (int reg_address, byte data) throws IOException {
         try {
             if (picdevice != null) {
@@ -179,16 +147,7 @@ public class SensorActivity extends Activity {
         } catch (java.io.IOException e) {
             Log.d(TAG, "writeI2c failed" + e);
         }
-=======
-    public void writeI2c (int reg_address, int data) {
-        try {
-            picdevice.writeRegByte(reg_address, (byte) data);
-        } catch (IOException e) {
-            Log.i(TAG, "Unable to close I2C device", e);
 
-        }
-
->>>>>>> b641389753039865351f59cb065c38a694e7d67f
     }
 
     public byte readI2c (int reg_address) throws IOException {

@@ -12,6 +12,7 @@ import com.google.android.things.pio.PeripheralManager;
 //import com.google.android.things.pio.PeripheralManagerService;
 import com.google.android.things.pio.I2cDevice;
 
+import com.google.android.things.userdriver.pio.GpioDriver;
 import com.group.cb.api.API;
 import com.group.cb.api.APIListener;
 
@@ -71,9 +72,10 @@ public class SensorActivity extends Activity {
         try {
             picdevice = manager.openI2cDevice("I2C1", SLAVE_ADDRESS);
             ledPWM = manager.openGpio(GPIO_LED_PWM);
-            ledPWM.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
+            configureOutput(ledPWM);
+
             if (picdevice == null) {
-                ledPWM.setValue(true);
+                ledPWM.setValue(false);
                 i2cError = true;
             }
         } catch (IOException ex) {
@@ -127,6 +129,16 @@ public class SensorActivity extends Activity {
 
             }
         });
+    }
+
+    public void configureOutput(Gpio gpio) throws IOException {
+        // Initialize the pin as a high output
+        gpio.setDirection(Gpio.DIRECTION_OUT_INITIALLY_HIGH);
+        // Low voltage is considered active
+        gpio.setActiveType(Gpio.ACTIVE_HIGH);
+
+        // Toggle the value to be LOW
+        gpio.setValue(true);
     }
 
     /**
@@ -283,18 +295,13 @@ public class SensorActivity extends Activity {
         Runnable onRunnable = new Runnable() {
             @Override
             public void run() {
-                try {
-                    if(i2cError) {
-                        ledValue = true;
-                    } else {
-                        ledValue = !ledValue;
-                    }
-
-                    ledPWM.setValue(ledValue);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if(i2cError) {
+                    ledValue = true;
+                } else {
+                    ledValue = !ledValue;
                 }
 
+                setGpio(ledValue);
                 handler.postDelayed(this, DELAY_MILLIS);
             }
         };
@@ -302,15 +309,20 @@ public class SensorActivity extends Activity {
         handler.postDelayed(onRunnable, DELAY_MILLIS);
     }
 
+    private void setGpio(boolean val) {
+        Log.d(TAG, "setGPIO: " + val);
+        try {
+            if (ledPWM != null) {
+                ledPWM.setValue(val);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void handleI2cIOException(IOException e) {
         i2cError = true;
-
         Log.d(TAG, e.toString());
-        try {
-            ledPWM.setValue(true);
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
     }
 }
 

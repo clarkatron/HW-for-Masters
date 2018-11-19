@@ -3,22 +3,16 @@ package edu.pdx.clark.project3;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
-import java.lang.Object;
-import java.util.List;
 import java.io.IOException;
+import java.util.function.Function;
 
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.PeripheralManager;
 //import com.google.android.things.pio.PeripheralManagerService;
 import com.google.android.things.pio.I2cDevice;
 
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.group.cb.api.API;
 import com.group.cb.api.APIListener;
 
@@ -45,15 +39,18 @@ import com.group.cb.api.APIListener;
 
 public class SensorActivity extends Activity {
 
-    private DatabaseReference databaseRef;
-    public String deviceName;
+    private static final int DAC1OUT_ADDRESS = 0x04;
+    private static final int PWM3_ADDRESS = 0x00;
+    private static final int PWM4_ADDRESS = 0x01;
+    private static final int PWM5_ADDRESS = 0x02;
+    private static final int PWM6_ADDRESS = 0x03;
+    private static final int SLAVE_ADDRESS = 0x08;
+    private static final double SUPPLY_VOLTAGE = 3.3;
     private static final String TAG = SensorActivity.class.getSimpleName();
-    private PeripheralManager manager;
+    private PeripheralManager manager = PeripheralManager.getInstance();
     private I2cDevice picdevice;
     private API api;
 
-    private int i2c_address = 0x08;
-    private int pwm_green, pwm_red, pwm_blue;
 
     private static final String GPIO_LED_PWM = "BCM4";
     private Gpio ledPWM;
@@ -69,39 +66,48 @@ public class SensorActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensor);
 
-        manager = PeripheralManager.getInstance();
+        api = new API(this);
 
         try {
-            //picdevice = manager.openI2cDevice("I2C1", i2c_address);
+            picdevice = manager.openI2cDevice("I2C1", SLAVE_ADDRESS);
             ledPWM = manager.openGpio(GPIO_LED_PWM);
             ledPWM.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
             if (picdevice == null) {
                 ledPWM.setValue(true);
             }
         } catch (IOException ex) { Log.i(TAG, "i2c won't open"); }
-            //Send device name to the data initialization function
 
+        setFireBaseToPICListener(API.DAC1OUT, DAC1OUT_ADDRESS, null);
+        setFireBaseToPICListener(API.PWM3, PWM3_ADDRESS, null);
+        setFireBaseToPICListener(API.PWM4, PWM4_ADDRESS, null);
+        setFireBaseToPICListener(API.PWM5, PWM5_ADDRESS, null);
+//        setFireBaseToPICListener(API.PWM6, PWM6_ADDRESS, null);
+        setADAListener();
+        setADCListeners();
+    }
 
-        api = new API(this);
-        api.addAPIListener(API.DAC1OUT, new APIListener() {
+    private void setFireBaseToPICListener(final String event,final int i2cAddress, final Function<Double, Double> process) {
+        api.addAPIListener(event, new APIListener() {
             @Override
             public void callback(double value) {
-                Log.d(TAG, "DAC1OUT: " + value);
-            }
 
-            @Override
-            public void callback(String value) {
+                if(event.equals(API.DAC1OUT)) {Log.d(TAG, "DAC1OUT = " + value);}
 
-            }
-        });
+                double tmpValue;
 
-        api.addAPIListener(API.PWM4, new APIListener() {
-            @Override
-            public void callback(double value) {
-                byte message = (byte) ((int) value);
-                Log.d(TAG, "PWM4: " + message);
+                if (process != null) {
+                    tmpValue = process.apply(value);
+                } else {
+                    tmpValue = value;
+                }
+
+                byte message = (byte) ((int) tmpValue);
+                Log.d(TAG, event + ": " + message);
+                writeI2c(i2cAddress, message);
+
                 try {
-                    writeI2c(0x01, message);
+                    byte checkValue = readI2c(i2cAddress);
+                    Log.d(TAG, "Value successfully wrote: " + (checkValue == message) + ", written=" + message + ", read=" + checkValue);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -113,6 +119,96 @@ public class SensorActivity extends Activity {
             }
         });
     }
+
+    private void setADAListener() {
+        final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                byte lsb;
+                byte msb;
+                try {
+                    lsb = readI2c(0x05);
+                    msb = readI2c(0x06);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return;
+                }
+
+                /* Swap msb and lsb */
+                double result = (double)((int) (getWordFromBytes(lsb, msb)));
+                result = Math.abs(result);
+
+                if (result == 0) {
+                    return;
+                }
+
+                double rawTemp = (result / 1024.0) * SUPPLY_VOLTAGE * 100;
+                double tempFahr = rawTemp * 1.8;
+
+                api.setAda5in(tempFahr);
+                handler.postDelayed(this, 1000);
+                Log.d(TAG, "temperature = " + tempFahr);
+
+                double val;
+                double tempCels = rawTemp - 27.5;
+                if (15 >= tempCels) {
+                    Log.d(TAG, "Set duty to 80%");
+                    val = 80;
+                } else if (15 < tempCels && tempCels <= 18) {
+                    Log.d(TAG, "Set duty to 30%");
+                    val = 30;
+                } else if (18 < tempCels && tempCels <= 22) {
+                    Log.d(TAG, "Set duty to 50%");
+                    val = 50;
+                } else if (22 < tempCels && tempCels <= 25) {
+                    Log.d(TAG, "Set duty to 70%");
+                    val = 70;
+                } else {
+                    Log.d(TAG, "Set duty to 40%");
+                    val = 40;
+                }
+
+               writeI2c(PWM6_ADDRESS, (byte) val);
+                api.setPwm6(val);
+            }
+        };
+
+        handler.postDelayed(runnable, 1000);
+    }
+
+    void setADCListeners() {
+        final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    short adc3value = readI2cWord(0x07);
+                    short adc4value = readI2cWord(0x09);
+                    short adc5value = readI2cWord(0x0b);
+                    
+                    Log.d(TAG, String.format("ADC3=%d, ADC4=%d, ADC5=%d", adc3value, adc4value, adc5value));
+                    api.setAdc3in(adc3value);
+                    api.setAdc4in(adc4value);
+                    api.setAdc5in(adc5value);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                handler.postDelayed(this, 2000);
+            }
+        };
+
+        handler.postDelayed(runnable, 2000);
+        //handler.postDelayed(runnable, 1000);
+    }
+
+    private long getWordFromBytes(byte lsb, byte msb) {
+        long base = 0x00;
+        base |= (msb << 8) | lsb;
+        Log.d(TAG, String.format("base = 0x%04x", base & 0xFFFF));
+        return base & 0xFFFF;
+    }
+
 
     @Override
     protected void onDestroy() {
@@ -126,20 +222,10 @@ public class SensorActivity extends Activity {
         }
     }
 
-   /**
-     * This will loop and give us data when data changes in the PWM[3-6] fields of the database and
-     * in the DAC field of the PIC controller.
-     * @param
-     */
-    public void getDataInit (){
-
-
-    }
-
     /**
      * This next function will write or read to the i2c line to access data registers.
      */
-    public void writeI2c (int reg_address, byte data) throws IOException {
+    public void writeI2c (int reg_address, byte data) {
         try {
             if (picdevice != null) {
                 picdevice.writeRegByte(reg_address, data);
@@ -147,16 +233,23 @@ public class SensorActivity extends Activity {
         } catch (java.io.IOException e) {
             Log.d(TAG, "writeI2c failed" + e);
         }
-
     }
 
     public byte readI2c (int reg_address) throws IOException {
         byte data = 0;
         if (picdevice != null) {
-            data = picdevice.readRegByte(reg_address);
-
+                data = picdevice.readRegByte(reg_address);
         }
         return data;
     }
+
+    public short readI2cWord (int reg_address) throws IOException {
+        short data = 0;
+        if (picdevice != null) {
+            data = picdevice.readRegWord(reg_address);
+        }
+        return data;
+    }
+
 }
 

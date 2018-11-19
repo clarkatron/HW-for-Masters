@@ -54,13 +54,19 @@ public class SensorActivity extends Activity {
 
     private static final String GPIO_LED_PWM = "BCM4";
     private Gpio ledPWM;
+    private boolean ledValue;
+    private boolean i2cError;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensor);
-
+        ledValue = true;
+        i2cError = false;
         api = new API(this);
+
+        doLED();
 
         try {
             picdevice = manager.openI2cDevice("I2C1", SLAVE_ADDRESS);
@@ -68,6 +74,7 @@ public class SensorActivity extends Activity {
             ledPWM.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
             if (picdevice == null) {
                 ledPWM.setValue(true);
+                i2cError = true;
             }
         } catch (IOException ex) {
             Log.i(TAG, "i2c won't open");
@@ -267,10 +274,8 @@ public class SensorActivity extends Activity {
     }
 
     /**
-     * Blink LED in 1 second intervals
+     * Blink LED in 1 second intervals if i2c error, otherwise don't toggle
      *
-     * Set a loop to turn ON the LED every two seconds.
-     * After a one second delay, set a loop to turn OFF the led every two seconds.
      * This creates an ON/OFF cycle of one second.
      */
     private void doLED() {
@@ -279,7 +284,13 @@ public class SensorActivity extends Activity {
             @Override
             public void run() {
                 try {
-                    ledPWM.setValue(true);
+                    if(i2cError) {
+                        ledValue = true;
+                    } else {
+                        ledValue = !ledValue;
+                    }
+
+                    ledPWM.setValue(ledValue);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -288,33 +299,18 @@ public class SensorActivity extends Activity {
             }
         };
 
-        Runnable startOffRunnable = new Runnable() {
-            @Override
-            public void run() {
-                Runnable offRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            ledPWM.setValue(false);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                        handler.postDelayed(this, DELAY_MILLIS);
-                    }
-                };
-
-                handler.postDelayed(offRunnable, DELAY_MILLIS);
-            }
-        };
-
         handler.postDelayed(onRunnable, DELAY_MILLIS);
-        handler.postDelayed(startOffRunnable, DELAY_MILLIS / 2);
     }
 
     private void handleI2cIOException(IOException e) {
-        e.printStackTrace();
-        doLED();
+        i2cError = true;
+
+        Log.d(TAG, e.toString());
+        try {
+            ledPWM.setValue(true);
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
     }
 }
 

@@ -31,19 +31,15 @@
       <file leaf-file-name="SensorActivity.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/edu/pdx/clark/project3/SensorActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="267" lean-forward="true" selection-start-line="267" selection-end-line="267" />
+            <state relative-caret-position="440">
+              <caret line="69" lean-forward="true" selection-start-line="69" selection-end-line="69" />
               <folding>
                 <element signature="e#4679#6412#0" expanded="true" />
                 <element signature="e#6411#6412#0" expanded="true" />
                 <element signature="e#6837#7542#0" expanded="true" />
                 <element signature="e#7541#7542#0" expanded="true" />
-                <element signature="e#9167#9520#0" expanded="true" />
-                <element signature="e#9519#9520#0" expanded="true" />
-                <element signature="e#9668#10305#0" expanded="true" />
-                <element signature="e#9778#10212#0" expanded="true" />
-                <element signature="e#10211#10212#0" expanded="true" />
-                <element signature="e#10304#10305#0" expanded="true" />
+                <element signature="e#9593#10061#0" expanded="true" />
+                <element signature="e#10060#10061#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -58,6 +54,7 @@
       <find>LED</find>
       <find>IOEx</find>
       <find>IOExcept</find>
+      <find>ledValue</find>
     </findStrings>
   </component>
   <component name="GradleLocalSettings">
@@ -4636,19 +4633,15 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/main/java/edu/pdx/clark/project3/SensorActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="267" lean-forward="true" selection-start-line="267" selection-end-line="267" />
+        <state relative-caret-position="440">
+          <caret line="69" lean-forward="true" selection-start-line="69" selection-end-line="69" />
           <folding>
             <element signature="e#4679#6412#0" expanded="true" />
             <element signature="e#6411#6412#0" expanded="true" />
             <element signature="e#6837#7542#0" expanded="true" />
             <element signature="e#7541#7542#0" expanded="true" />
-            <element signature="e#9167#9520#0" expanded="true" />
-            <element signature="e#9519#9520#0" expanded="true" />
-            <element signature="e#9668#10305#0" expanded="true" />
-            <element signature="e#9778#10212#0" expanded="true" />
-            <element signature="e#10211#10212#0" expanded="true" />
-            <element signature="e#10304#10305#0" expanded="true" />
+            <element signature="e#9593#10061#0" expanded="true" />
+            <element signature="e#10060#10061#0" expanded="true" />
           </folding>
         </state>
       </provider>

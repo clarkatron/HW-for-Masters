@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.util.Log;
 
 import java.io.IOException;
-import java.util.function.Function;
 
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.PeripheralManager;
@@ -47,6 +46,7 @@ public class SensorActivity extends Activity {
     private static final int SLAVE_ADDRESS = 0x08;
     private static final double SUPPLY_VOLTAGE = 3.3;
     private static final String TAG = SensorActivity.class.getSimpleName();
+    public static final int DELAY_MILLIS = 2000;
     private PeripheralManager manager = PeripheralManager.getInstance();
     private I2cDevice picdevice;
     private API api;
@@ -55,12 +55,6 @@ public class SensorActivity extends Activity {
     private static final String GPIO_LED_PWM = "BCM4";
     private Gpio ledPWM;
 
-    /**
-     * Create the app, setup the i2c device list and set the name of the device.
-     * Then we will go into the data acquasition loop.
-     *
-     * @param savedInstanceState
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,33 +69,41 @@ public class SensorActivity extends Activity {
             if (picdevice == null) {
                 ledPWM.setValue(true);
             }
-        } catch (IOException ex) { Log.i(TAG, "i2c won't open"); }
+        } catch (IOException ex) {
+            Log.i(TAG, "i2c won't open");
+            handleI2cIOException(ex);
+        }
 
-        setFireBaseToPICListener(API.DAC1OUT, DAC1OUT_ADDRESS, null);
-        setFireBaseToPICListener(API.PWM3, PWM3_ADDRESS, null);
-        setFireBaseToPICListener(API.PWM4, PWM4_ADDRESS, null);
-        setFireBaseToPICListener(API.PWM5, PWM5_ADDRESS, null);
-//        setFireBaseToPICListener(API.PWM6, PWM6_ADDRESS, null);
+        setFireBaseToPICListener(API.DAC1OUT, DAC1OUT_ADDRESS);
+        setPWM345Listeners();
         setADAListener();
         setADCListeners();
     }
 
-    private void setFireBaseToPICListener(final String event,final int i2cAddress, final Function<Double, Double> process) {
+    /**
+     * @brief Sets the database listeners for PWMs 3, 4, and 5.
+     *
+     * Control the colors of an RGB LED connected to the PIC by adjusting the duty cycle of
+     * three of the PIC PWM channels. The duty cycles will be set in the mobile app and written to
+     * the Firebase database. The RPI reads the values from Firebase and tells the PIC to adjust the
+     * PWM values according to slider values in the mobile app.
+     */
+    private void setPWM345Listeners() {
+        setFireBaseToPICListener(API.PWM3, PWM3_ADDRESS);
+        setFireBaseToPICListener(API.PWM4, PWM4_ADDRESS);
+        setFireBaseToPICListener(API.PWM5, PWM5_ADDRESS);
+    }
+
+    /**
+     * @brief Set a FireBase data change to trigger I2C write on the PIC
+     * @param event The API FireBase event to get the data from
+     * @param i2cAddress The I2C address to write to on the PIC
+     */
+    private void setFireBaseToPICListener(final String event,final int i2cAddress) {
         api.addAPIListener(event, new APIListener() {
             @Override
             public void callback(double value) {
-
-                if(event.equals(API.DAC1OUT)) {Log.d(TAG, "DAC1OUT = " + value);}
-
-                double tmpValue;
-
-                if (process != null) {
-                    tmpValue = process.apply(value);
-                } else {
-                    tmpValue = value;
-                }
-
-                byte message = (byte) ((int) tmpValue);
+                byte message = (byte) ((int) value);
                 Log.d(TAG, event + ": " + message);
                 writeI2c(i2cAddress, message);
 
@@ -109,7 +111,7 @@ public class SensorActivity extends Activity {
                     byte checkValue = readI2c(i2cAddress);
                     Log.d(TAG, "Value successfully wrote: " + (checkValue == message) + ", written=" + message + ", read=" + checkValue);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    handleI2cIOException(e);
                 }
             }
 
@@ -120,6 +122,12 @@ public class SensorActivity extends Activity {
         });
     }
 
+    /**
+     * @brief Set the ADA listeners for FireBase and device communication
+     *
+     * Based on the current ambient temperature (TMP36), set the duty cycle of the PWM6
+     * channel of the PIC to adjust the speed of the 6V hobbyist motor.
+     */
     private void setADAListener() {
         final Handler handler = new Handler();
         Runnable runnable = new Runnable() {
@@ -131,7 +139,7 @@ public class SensorActivity extends Activity {
                     lsb = readI2c(0x05);
                     msb = readI2c(0x06);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    handleI2cIOException(e);
                     return;
                 }
 
@@ -147,7 +155,7 @@ public class SensorActivity extends Activity {
                 double tempFahr = rawTemp * 1.8;
 
                 api.setAda5in(tempFahr);
-                handler.postDelayed(this, 1000);
+                handler.postDelayed(this, DELAY_MILLIS / 2);
                 Log.d(TAG, "temperature = " + tempFahr);
 
                 double val;
@@ -169,14 +177,20 @@ public class SensorActivity extends Activity {
                     val = 40;
                 }
 
-               writeI2c(PWM6_ADDRESS, (byte) val);
+                writeI2c(PWM6_ADDRESS, (byte) val);
                 api.setPwm6(val);
             }
         };
 
-        handler.postDelayed(runnable, 1000);
+        handler.postDelayed(runnable, DELAY_MILLIS / 2);
     }
 
+    /**
+     *  @brief Sets the ADC listeners for Firebase to ADC communication
+     *
+     *  Continuously read the ADC channels of the PIC microcontroller using the I2C protocol and update the
+     *  values in the FireBase database and in the mobile app.
+     */
     void setADCListeners() {
         final Handler handler = new Handler();
         Runnable runnable = new Runnable() {
@@ -192,23 +206,20 @@ public class SensorActivity extends Activity {
                     api.setAdc4in(adc4value);
                     api.setAdc5in(adc5value);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    handleI2cIOException(e);
                 }
-                handler.postDelayed(this, 2000);
+                handler.postDelayed(this, DELAY_MILLIS);
             }
         };
 
-        handler.postDelayed(runnable, 2000);
-        //handler.postDelayed(runnable, 1000);
+        handler.postDelayed(runnable, DELAY_MILLIS);
     }
 
     private long getWordFromBytes(byte lsb, byte msb) {
         long base = 0x00;
         base |= (msb << 8) | lsb;
-        Log.d(TAG, String.format("base = 0x%04x", base & 0xFFFF));
         return base & 0xFFFF;
     }
-
 
     @Override
     protected void onDestroy() {
@@ -218,7 +229,10 @@ public class SensorActivity extends Activity {
             try {
                 picdevice.close();
                 picdevice = null;
-            } catch (IOException e) { Log.i(TAG, "Unable to close I2C device", e); }
+            } catch (IOException e) {
+                Log.i(TAG, "Unable to close I2C device", e);
+                handleI2cIOException(e);
+            }
         }
     }
 
@@ -230,7 +244,8 @@ public class SensorActivity extends Activity {
             if (picdevice != null) {
                 picdevice.writeRegByte(reg_address, data);
             }
-        } catch (java.io.IOException e) {
+        } catch (IOException e) {
+            handleI2cIOException(e);
             Log.d(TAG, "writeI2c failed" + e);
         }
     }
@@ -251,5 +266,55 @@ public class SensorActivity extends Activity {
         return data;
     }
 
+    /**
+     * Blink LED in 1 second intervals
+     *
+     * Set a loop to turn ON the LED every two seconds.
+     * After a one second delay, set a loop to turn OFF the led every two seconds.
+     * This creates an ON/OFF cycle of one second.
+     */
+    private void doLED() {
+        final Handler handler = new Handler();
+        Runnable onRunnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ledPWM.setValue(true);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                handler.postDelayed(this, DELAY_MILLIS);
+            }
+        };
+
+        Runnable startOffRunnable = new Runnable() {
+            @Override
+            public void run() {
+                Runnable offRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            ledPWM.setValue(false);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        handler.postDelayed(this, DELAY_MILLIS);
+                    }
+                };
+
+                handler.postDelayed(offRunnable, DELAY_MILLIS);
+            }
+        };
+
+        handler.postDelayed(onRunnable, DELAY_MILLIS);
+        handler.postDelayed(startOffRunnable, DELAY_MILLIS / 2);
+    }
+
+    private void handleI2cIOException(IOException e) {
+        e.printStackTrace();
+        doLED();
+    }
 }
 
